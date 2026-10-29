@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+kpi_element_instances.csv
+c8run/
+*.log
+.vscode/
+.idea/

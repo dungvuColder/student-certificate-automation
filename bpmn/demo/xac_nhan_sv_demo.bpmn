@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  xmlns:zeebe="http://camunda.org/schema/zeebe/1.0"
+  xmlns:modeler="http://camunda.org/schema/modeler/1.0"
+  id="Defs_Demo" targetNamespace="http://uet.vnu.edu.vn/btl-khdv/nhom16"
+  exporter="BTL KHDV Nhom 16" exporterVersion="1.0"
+  modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.8.0">
+  <bpmn:process id="xac_nhan_sv_demo" name="Cấp giấy xác nhận SV (demo task 4)" isExecutable="true">
+    <bpmn:startEvent id="Start_NhanYeuCau" name="Nhận yêu cầu">
+      <bpmn:outgoing>Flow_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Task_TraCuu" name="Tra cứu MSSV">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="tra-cuu-mssv" retries="3" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_2</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="GW_HopLe" name="MSSV hợp lệ?" default="Flow_KhongHopLe">
+      <bpmn:incoming>Flow_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_HopLe</bpmn:outgoing>
+      <bpmn:outgoing>Flow_KhongHopLe</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Task_Duyet" name="Cán bộ CTSV duyệt">
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+        <zeebe:formDefinition formId="duyet-yeu-cau" />
+        <zeebe:assignmentDefinition assignee="demo" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_HopLe</bpmn:incoming>
+      <bpmn:outgoing>Flow_3</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="GW_DongY" name="Đồng ý cấp?" default="Flow_TuChoi">
+      <bpmn:incoming>Flow_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_DongY</bpmn:outgoing>
+      <bpmn:outgoing>Flow_TuChoi</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_GuiKetQua" name="Sinh PDF và gửi kết quả">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="gui-ket-qua" retries="3" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_DongY</bpmn:incoming>
+      <bpmn:outgoing>Flow_4</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_DaCap" name="Đã cấp giấy">
+      <bpmn:incoming>Flow_4</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="End_KhongHopLe" name="MSSV không hợp lệ">
+      <bpmn:incoming>Flow_KhongHopLe</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="End_TuChoi" name="Cán bộ từ chối">
+      <bpmn:incoming>Flow_TuChoi</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="Start_NhanYeuCau" targetRef="Task_TraCuu" />
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_TraCuu" targetRef="GW_HopLe" />
+    <bpmn:sequenceFlow id="Flow_HopLe" name="Có" sourceRef="GW_HopLe" targetRef="Task_Duyet">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">=hopLe = true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_KhongHopLe" name="Không" sourceRef="GW_HopLe" targetRef="End_KhongHopLe" />
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="Task_Duyet" targetRef="GW_DongY" />
+    <bpmn:sequenceFlow id="Flow_DongY" name="Có" sourceRef="GW_DongY" targetRef="Task_GuiKetQua">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">=dongY = true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_TuChoi" name="Không" sourceRef="GW_DongY" targetRef="End_TuChoi" />
+    <bpmn:sequenceFlow id="Flow_4" sourceRef="Task_GuiKetQua" targetRef="End_DaCap" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_Demo">
+    <bpmndi:BPMNPlane id="Plane_Demo" bpmnElement="xac_nhan_sv_demo">
+      <bpmndi:BPMNShape id="Start_NhanYeuCau_di" bpmnElement="Start_NhanYeuCau">
+        <dc:Bounds x="152" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="136" y="225" width="68" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_TraCuu_di" bpmnElement="Task_TraCuu">
+        <dc:Bounds x="240" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_HopLe_di" bpmnElement="GW_HopLe" isMarkerVisible="true">
+        <dc:Bounds x="395" y="175" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="383" y="145" width="74" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Duyet_di" bpmnElement="Task_Duyet">
+        <dc:Bounds x="500" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GW_DongY_di" bpmnElement="GW_DongY" isMarkerVisible="true">
+        <dc:Bounds x="655" y="175" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="648" y="145" width="64" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_GuiKetQua_di" bpmnElement="Task_GuiKetQua">
+        <dc:Bounds x="760" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_DaCap_di" bpmnElement="End_DaCap">
+        <dc:Bounds x="912" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="900" y="225" width="60" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_KhongHopLe_di" bpmnElement="End_KhongHopLe">
+        <dc:Bounds x="402" y="302" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="372" y="345" width="96" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_TuChoi_di" bpmnElement="End_TuChoi">
+        <dc:Bounds x="662" y="302" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="642" y="345" width="76" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+        <di:waypoint x="188" y="200" /><di:waypoint x="240" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2">
+        <di:waypoint x="340" y="200" /><di:waypoint x="395" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_HopLe_di" bpmnElement="Flow_HopLe">
+        <di:waypoint x="445" y="200" /><di:waypoint x="500" y="200" />
+        <bpmndi:BPMNLabel><dc:Bounds x="463" y="182" width="16" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_KhongHopLe_di" bpmnElement="Flow_KhongHopLe">
+        <di:waypoint x="420" y="225" /><di:waypoint x="420" y="302" />
+        <bpmndi:BPMNLabel><dc:Bounds x="426" y="255" width="34" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3">
+        <di:waypoint x="600" y="200" /><di:waypoint x="655" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_DongY_di" bpmnElement="Flow_DongY">
+        <di:waypoint x="705" y="200" /><di:waypoint x="760" y="200" />
+        <bpmndi:BPMNLabel><dc:Bounds x="723" y="182" width="16" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_TuChoi_di" bpmnElement="Flow_TuChoi">
+        <di:waypoint x="680" y="225" /><di:waypoint x="680" y="302" />
+        <bpmndi:BPMNLabel><dc:Bounds x="686" y="255" width="34" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4">
+        <di:waypoint x="860" y="200" /><di:waypoint x="912" y="200" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  id="Defs_AsIs" targetNamespace="http://uet.vnu.edu.vn/btl-khdv/nhom16"
+  exporter="BTL KHDV Nhom 16" exporterVersion="1.0">
+<bpmn:collaboration id="Collab_AsIs">
+<bpmn:participant id="Pool_SinhVien" name="Sinh viên" processRef="Process_SinhVien" />
+<bpmn:participant id="Pool_UET" name="Trường ĐH Công nghệ (UET)" processRef="Process_CapGiayXacNhan_AsIs" />
+<bpmn:messageFlow id="M1" name="Yêu cầu giấy xác nhận" sourceRef="SV_GuiYeuCau" targetRef="HUB_Start" />
+<bpmn:messageFlow id="M2" name="Trạng thái &quot;Từ chối&quot;" sourceRef="CTSV_EndTuChoi" targetRef="SV_NhanTuChoi" />
+<bpmn:messageFlow id="M3" name="Trạng thái &quot;Đã xong&quot;" sourceRef="HUB_ThongBao" targetRef="SV_NhanDaXong" />
+<bpmn:messageFlow id="M4" name="Sinh viên có mặt" sourceRef="SV_DenNhan" targetRef="CTSV_SVDen" />
+</bpmn:collaboration>
+<bpmn:process id="Process_SinhVien" isExecutable="false">
+<bpmn:startEvent id="SV_Start" name="Cần giấy xác nhận sinh viên"><bpmn:outgoing>F1</bpmn:outgoing></bpmn:startEvent>
+<bpmn:sendTask id="SV_GuiYeuCau" name="Gửi yêu cầu trên StudentHub"><bpmn:incoming>F1</bpmn:incoming><bpmn:outgoing>F2</bpmn:outgoing></bpmn:sendTask>
+<bpmn:eventBasedGateway id="SV_Cho" name=""><bpmn:incoming>F2</bpmn:incoming><bpmn:outgoing>F3</bpmn:outgoing><bpmn:outgoing>F4</bpmn:outgoing></bpmn:eventBasedGateway>
+<bpmn:intermediateCatchEvent id="SV_NhanTuChoi" name="Nhận thông báo từ chối"><bpmn:incoming>F3</bpmn:incoming><bpmn:outgoing>F5</bpmn:outgoing><bpmn:messageEventDefinition id="SV_NhanTuChoi_md" /></bpmn:intermediateCatchEvent>
+<bpmn:endEvent id="SV_EndTuChoi" name="Không nhận được giấy"><bpmn:incoming>F5</bpmn:incoming></bpmn:endEvent>
+<bpmn:intermediateCatchEvent id="SV_NhanDaXong" name="Thấy trạng thái &quot;Đã xong&quot;"><bpmn:incoming>F4</bpmn:incoming><bpmn:outgoing>F6</bpmn:outgoing><bpmn:messageEventDefinition id="SV_NhanDaXong_md" /></bpmn:intermediateCatchEvent>
+<bpmn:sendTask id="SV_DenNhan" name="Đến phòng CTSV nhận giấy (giờ hành chính)"><bpmn:incoming>F6</bpmn:incoming><bpmn:outgoing>F7</bpmn:outgoing></bpmn:sendTask>
+<bpmn:endEvent id="SV_End" name="Đã có giấy xác nhận"><bpmn:incoming>F7</bpmn:incoming></bpmn:endEvent>
+<bpmn:sequenceFlow id="F1" name="" sourceRef="SV_Start" targetRef="SV_GuiYeuCau" />
+<bpmn:sequenceFlow id="F2" name="" sourceRef="SV_GuiYeuCau" targetRef="SV_Cho" />
+<bpmn:sequenceFlow id="F3" name="" sourceRef="SV_Cho" targetRef="SV_NhanTuChoi" />
+<bpmn:sequenceFlow id="F4" name="" sourceRef="SV_Cho" targetRef="SV_NhanDaXong" />
+<bpmn:sequenceFlow id="F5" name="" sourceRef="SV_NhanTuChoi" targetRef="SV_EndTuChoi" />
+<bpmn:sequenceFlow id="F6" name="" sourceRef="SV_NhanDaXong" targetRef="SV_DenNhan" />
+<bpmn:sequenceFlow id="F7" name="" sourceRef="SV_DenNhan" targetRef="SV_End" />
+</bpmn:process>
+<bpmn:process id="Process_CapGiayXacNhan_AsIs" isExecutable="false">
+<bpmn:laneSet id="LaneSet_UET">
+<bpmn:lane id="Lane_StudentHub" name="StudentHub"><bpmn:flowNodeRef>HUB_Start</bpmn:flowNodeRef><bpmn:flowNodeRef>HUB_Luu</bpmn:flowNodeRef><bpmn:flowNodeRef>HUB_ThongBao</bpmn:flowNodeRef></bpmn:lane>
+<bpmn:lane id="Lane_CTSV" name="Chuyên viên phòng CTSV"><bpmn:flowNodeRef>CTSV_DotXuLy</bpmn:flowNodeRef><bpmn:flowNodeRef>CTSV_MoDS</bpmn:flowNodeRef><bpmn:flowNodeRef>CTSV_TraCuu</bpmn:flowNodeRef><bpmn:flowNodeRef>CTSV_HopLe</bpmn:flowNodeRef><bpmn:flowNodeRef>CTSV_TuChoi</bpmn:flowNodeRef><bpmn:flowNodeRef>CTSV_EndTuChoi</bpmn:flowNodeRef><bpmn:flowNodeRef>CTSV_Soan</bpmn:flowNodeRef><bpmn:flowNodeRef>CTSV_DotTrinh</bpmn:flowNodeRef><bpmn:flowNodeRef>CTSV_Trinh</bpmn:flowNodeRef><bpmn:flowNodeRef>CTSV_DaXong</bpmn:flowNodeRef><bpmn:flowNodeRef>CTSV_SVDen</bpmn:flowNodeRef><bpmn:flowNodeRef>CTSV_TraGiay</bpmn:flowNodeRef><bpmn:flowNodeRef>CTSV_End</bpmn:flowNodeRef></bpmn:lane>
+<bpmn:lane id="Lane_LanhDao" name="Lãnh đạo phòng CTSV"><bpmn:flowNodeRef>LD_Ky</bpmn:flowNodeRef></bpmn:lane>
+<bpmn:lane id="Lane_VanThu" name="Văn thư"><bpmn:flowNodeRef>VT_DongDau</bpmn:flowNodeRef></bpmn:lane>
+</bpmn:laneSet>
+<bpmn:startEvent id="HUB_Start" name="Nhận yêu cầu"><bpmn:outgoing>U1</bpmn:outgoing><bpmn:messageEventDefinition id="HUB_Start_md" /></bpmn:startEvent>
+<bpmn:serviceTask id="HUB_Luu" name="Lưu yêu cầu, đặt trạng thái &quot;Đang làm&quot;"><bpmn:incoming>U1</bpmn:incoming><bpmn:outgoing>U2</bpmn:outgoing></bpmn:serviceTask>
+<bpmn:intermediateThrowEvent id="HUB_ThongBao" name="Hiển thị &quot;Đã xong&quot;"><bpmn:incoming>U14</bpmn:incoming><bpmn:outgoing>U15</bpmn:outgoing><bpmn:messageEventDefinition id="HUB_ThongBao_md" /></bpmn:intermediateThrowEvent>
+<bpmn:intermediateCatchEvent id="CTSV_DotXuLy" name="Đến đợt xử lý (sáng/chiều)"><bpmn:incoming>U2</bpmn:incoming><bpmn:outgoing>U3</bpmn:outgoing><bpmn:timerEventDefinition id="CTSV_DotXuLy_td"><bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT4H</bpmn:timeDuration></bpmn:timerEventDefinition></bpmn:intermediateCatchEvent>
+<bpmn:userTask id="CTSV_MoDS" name="Mở danh sách yêu cầu mới"><bpmn:incoming>U3</bpmn:incoming><bpmn:outgoing>U4</bpmn:outgoing></bpmn:userTask>
+<bpmn:userTask id="CTSV_TraCuu" name="Tra cứu tình trạng học tập trên HT đào tạo"><bpmn:incoming>U4</bpmn:incoming><bpmn:outgoing>U5</bpmn:outgoing></bpmn:userTask>
+<bpmn:exclusiveGateway id="CTSV_HopLe" name="Hợp lệ?"><bpmn:incoming>U5</bpmn:incoming><bpmn:outgoing>U6</bpmn:outgoing><bpmn:outgoing>U7</bpmn:outgoing></bpmn:exclusiveGateway>
+<bpmn:userTask id="CTSV_TuChoi" name="Cập nhật &quot;Từ chối&quot; trên StudentHub"><bpmn:incoming>U7</bpmn:incoming><bpmn:outgoing>U8</bpmn:outgoing></bpmn:userTask>
+<bpmn:endEvent id="CTSV_EndTuChoi" name="Đã từ chối"><bpmn:incoming>U8</bpmn:incoming><bpmn:messageEventDefinition id="CTSV_EndTuChoi_md" /></bpmn:endEvent>
+<bpmn:manualTask id="CTSV_Soan" name="Soạn giấy từ mẫu Word, in"><bpmn:incoming>U6</bpmn:incoming><bpmn:outgoing>U9</bpmn:outgoing></bpmn:manualTask>
+<bpmn:intermediateCatchEvent id="CTSV_DotTrinh" name="Đến đợt trình ký"><bpmn:incoming>U9</bpmn:incoming><bpmn:outgoing>U10</bpmn:outgoing><bpmn:timerEventDefinition id="CTSV_DotTrinh_td"><bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT12H</bpmn:timeDuration></bpmn:timerEventDefinition></bpmn:intermediateCatchEvent>
+<bpmn:manualTask id="CTSV_Trinh" name="Trình ký theo lô"><bpmn:incoming>U10</bpmn:incoming><bpmn:outgoing>U11</bpmn:outgoing></bpmn:manualTask>
+<bpmn:manualTask id="LD_Ky" name="Ký duyệt (chờ 2–24 giờ)"><bpmn:incoming>U11</bpmn:incoming><bpmn:outgoing>U12</bpmn:outgoing></bpmn:manualTask>
+<bpmn:manualTask id="VT_DongDau" name="Đóng dấu, vào sổ văn bản"><bpmn:incoming>U12</bpmn:incoming><bpmn:outgoing>U13</bpmn:outgoing></bpmn:manualTask>
+<bpmn:userTask id="CTSV_DaXong" name="Cập nhật &quot;Đã xong&quot; trên StudentHub"><bpmn:incoming>U13</bpmn:incoming><bpmn:outgoing>U14</bpmn:outgoing></bpmn:userTask>
+<bpmn:intermediateCatchEvent id="CTSV_SVDen" name="Sinh viên đến nhận"><bpmn:incoming>U15</bpmn:incoming><bpmn:outgoing>U16</bpmn:outgoing><bpmn:messageEventDefinition id="CTSV_SVDen_md" /></bpmn:intermediateCatchEvent>
+<bpmn:manualTask id="CTSV_TraGiay" name="Kiểm tra thẻ SV, trả giấy, SV ký nhận"><bpmn:incoming>U16</bpmn:incoming><bpmn:outgoing>U17</bpmn:outgoing></bpmn:manualTask>
+<bpmn:endEvent id="CTSV_End" name="Hoàn tất"><bpmn:incoming>U17</bpmn:incoming></bpmn:endEvent>
+<bpmn:sequenceFlow id="U1" name="" sourceRef="HUB_Start" targetRef="HUB_Luu" />
+<bpmn:sequenceFlow id="U2" name="" sourceRef="HUB_Luu" targetRef="CTSV_DotXuLy" />
+<bpmn:sequenceFlow id="U3" name="" sourceRef="CTSV_DotXuLy" targetRef="CTSV_MoDS" />
+<bpmn:sequenceFlow id="U4" name="" sourceRef="CTSV_MoDS" targetRef="CTSV_TraCuu" />
+<bpmn:sequenceFlow id="U5" name="" sourceRef="CTSV_TraCuu" targetRef="CTSV_HopLe" />
+<bpmn:sequenceFlow id="U6" name="Có" sourceRef="CTSV_HopLe" targetRef="CTSV_Soan" />
+<bpmn:sequenceFlow id="U7" name="Không (thôi học, bảo lưu, sai thông tin)" sourceRef="CTSV_HopLe" targetRef="CTSV_TuChoi" />
+<bpmn:sequenceFlow id="U8" name="" sourceRef="CTSV_TuChoi" targetRef="CTSV_EndTuChoi" />
+<bpmn:sequenceFlow id="U9" name="" sourceRef="CTSV_Soan" targetRef="CTSV_DotTrinh" />
+<bpmn:sequenceFlow id="U10" name="" sourceRef="CTSV_DotTrinh" targetRef="CTSV_Trinh" />
+<bpmn:sequenceFlow id="U11" name="" sourceRef="CTSV_Trinh" targetRef="LD_Ky" />
+<bpmn:sequenceFlow id="U12" name="" sourceRef="LD_Ky" targetRef="VT_DongDau" />
+<bpmn:sequenceFlow id="U13" name="" sourceRef="VT_DongDau" targetRef="CTSV_DaXong" />
+<bpmn:sequenceFlow id="U14" name="" sourceRef="CTSV_DaXong" targetRef="HUB_ThongBao" />
+<bpmn:sequenceFlow id="U15" name="" sourceRef="HUB_ThongBao" targetRef="CTSV_SVDen" />
+<bpmn:sequenceFlow id="U16" name="" sourceRef="CTSV_SVDen" targetRef="CTSV_TraGiay" />
+<bpmn:sequenceFlow id="U17" name="" sourceRef="CTSV_TraGiay" targetRef="CTSV_End" />
+<bpmn:textAnnotation id="A1"><bpmn:text>Chờ 0–4 giờ: yêu cầu nằm chờ đến đợt xử lý</bpmn:text></bpmn:textAnnotation>
+<bpmn:association id="A1_as" sourceRef="CTSV_DotXuLy" targetRef="A1" />
+<bpmn:textAnnotation id="A2"><bpmn:text>Nhập lại MSSV thủ công (2 hệ thống không liên thông)</bpmn:text></bpmn:textAnnotation>
+<bpmn:association id="A2_as" sourceRef="CTSV_TraCuu" targetRef="A2" />
+<bpmn:textAnnotation id="A3"><bpmn:text>Trình ký theo lô: chờ đến đợt</bpmn:text></bpmn:textAnnotation>
+<bpmn:association id="A3_as" sourceRef="CTSV_Trinh" targetRef="A3" />
+</bpmn:process>
+<bpmndi:BPMNDiagram id="Diagram_1"><bpmndi:BPMNPlane id="Plane_1" bpmnElement="Collab_AsIs">
+<bpmndi:BPMNShape id="Pool_SinhVien_di" bpmnElement="Pool_SinhVien" isHorizontal="true"><dc:Bounds x="100" y="10" width="2300" height="230" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Pool_UET_di" bpmnElement="Pool_UET" isHorizontal="true"><dc:Bounds x="100" y="280" width="2300" height="560" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Lane_StudentHub_di" bpmnElement="Lane_StudentHub" isHorizontal="true"><dc:Bounds x="130" y="280" width="2270" height="120" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Lane_CTSV_di" bpmnElement="Lane_CTSV" isHorizontal="true"><dc:Bounds x="130" y="400" width="2270" height="200" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Lane_LanhDao_di" bpmnElement="Lane_LanhDao" isHorizontal="true"><dc:Bounds x="130" y="600" width="2270" height="120" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="Lane_VanThu_di" bpmnElement="Lane_VanThu" isHorizontal="true"><dc:Bounds x="130" y="720" width="2270" height="120" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="SV_Start_di" bpmnElement="SV_Start"><dc:Bounds x="172" y="82" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="135" y="122" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="SV_GuiYeuCau_di" bpmnElement="SV_GuiYeuCau"><dc:Bounds x="250" y="60" width="100" height="80" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="SV_Cho_di" bpmnElement="SV_Cho"><dc:Bounds x="415" y="75" width="50" height="50" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="SV_NhanTuChoi_di" bpmnElement="SV_NhanTuChoi"><dc:Bounds x="1152" y="162" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="1115" y="118" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="SV_EndTuChoi_di" bpmnElement="SV_EndTuChoi"><dc:Bounds x="1272" y="162" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="1235" y="202" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="SV_NhanDaXong_di" bpmnElement="SV_NhanDaXong"><dc:Bounds x="1902" y="82" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="1865" y="38" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="SV_DenNhan_di" bpmnElement="SV_DenNhan"><dc:Bounds x="2010" y="60" width="100" height="80" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="SV_End_di" bpmnElement="SV_End"><dc:Bounds x="2302" y="82" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="2265" y="122" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="HUB_Start_di" bpmnElement="HUB_Start"><dc:Bounds x="282" y="322" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="245" y="362" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="HUB_Luu_di" bpmnElement="HUB_Luu"><dc:Bounds x="380" y="300" width="100" height="80" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="HUB_ThongBao_di" bpmnElement="HUB_ThongBao"><dc:Bounds x="1902" y="322" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="1865" y="362" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="CTSV_DotXuLy_di" bpmnElement="CTSV_DotXuLy"><dc:Bounds x="542" y="432" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="505" y="472" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="CTSV_MoDS_di" bpmnElement="CTSV_MoDS"><dc:Bounds x="630" y="410" width="100" height="80" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="CTSV_TraCuu_di" bpmnElement="CTSV_TraCuu"><dc:Bounds x="780" y="410" width="100" height="80" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="CTSV_HopLe_di" bpmnElement="CTSV_HopLe" isMarkerVisible="true"><dc:Bounds x="945" y="425" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="935" y="403" width="70" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="CTSV_TuChoi_di" bpmnElement="CTSV_TuChoi"><dc:Bounds x="1030" y="510" width="100" height="80" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="CTSV_EndTuChoi_di" bpmnElement="CTSV_EndTuChoi"><dc:Bounds x="1152" y="532" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="1115" y="572" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="CTSV_Soan_di" bpmnElement="CTSV_Soan"><dc:Bounds x="1050" y="410" width="100" height="80" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="CTSV_DotTrinh_di" bpmnElement="CTSV_DotTrinh"><dc:Bounds x="1222" y="432" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="1185" y="472" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="CTSV_Trinh_di" bpmnElement="CTSV_Trinh"><dc:Bounds x="1310" y="410" width="100" height="80" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="LD_Ky_di" bpmnElement="LD_Ky"><dc:Bounds x="1450" y="620" width="100" height="80" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="VT_DongDau_di" bpmnElement="VT_DongDau"><dc:Bounds x="1590" y="740" width="100" height="80" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="CTSV_DaXong_di" bpmnElement="CTSV_DaXong"><dc:Bounds x="1730" y="410" width="100" height="80" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="CTSV_SVDen_di" bpmnElement="CTSV_SVDen"><dc:Bounds x="2042" y="432" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="2005" y="472" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="CTSV_TraGiay_di" bpmnElement="CTSV_TraGiay"><dc:Bounds x="2140" y="410" width="100" height="80" /></bpmndi:BPMNShape>
+<bpmndi:BPMNShape id="CTSV_End_di" bpmnElement="CTSV_End"><dc:Bounds x="2302" y="432" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="2265" y="472" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="F1_di" bpmnElement="F1"><di:waypoint x="208" y="100" /><di:waypoint x="250" y="100" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="F2_di" bpmnElement="F2"><di:waypoint x="350" y="100" /><di:waypoint x="415" y="100" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="F3_di" bpmnElement="F3"><di:waypoint x="440" y="125" /><di:waypoint x="440" y="180" /><di:waypoint x="1152" y="180" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="F4_di" bpmnElement="F4"><di:waypoint x="465" y="100" /><di:waypoint x="1902" y="100" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="F5_di" bpmnElement="F5"><di:waypoint x="1188" y="180" /><di:waypoint x="1272" y="180" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="F6_di" bpmnElement="F6"><di:waypoint x="1938" y="100" /><di:waypoint x="2010" y="100" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="F7_di" bpmnElement="F7"><di:waypoint x="2110" y="100" /><di:waypoint x="2302" y="100" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="U1_di" bpmnElement="U1"><di:waypoint x="318" y="340" /><di:waypoint x="380" y="340" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="U2_di" bpmnElement="U2"><di:waypoint x="480" y="340" /><di:waypoint x="511" y="340" /><di:waypoint x="511" y="450" /><di:waypoint x="542" y="450" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="U3_di" bpmnElement="U3"><di:waypoint x="578" y="450" /><di:waypoint x="630" y="450" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="U4_di" bpmnElement="U4"><di:waypoint x="730" y="450" /><di:waypoint x="780" y="450" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="U5_di" bpmnElement="U5"><di:waypoint x="880" y="450" /><di:waypoint x="945" y="450" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="U6_di" bpmnElement="U6"><di:waypoint x="995" y="450" /><di:waypoint x="1050" y="450" /><bpmndi:BPMNLabel><dc:Bounds x="999" y="430" width="30" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="U7_di" bpmnElement="U7"><di:waypoint x="970" y="475" /><di:waypoint x="970" y="550" /><di:waypoint x="1030" y="550" /><bpmndi:BPMNLabel><dc:Bounds x="870" y="497" width="95" height="42" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="U8_di" bpmnElement="U8"><di:waypoint x="1130" y="550" /><di:waypoint x="1152" y="550" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="U9_di" bpmnElement="U9"><di:waypoint x="1150" y="450" /><di:waypoint x="1222" y="450" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="U10_di" bpmnElement="U10"><di:waypoint x="1258" y="450" /><di:waypoint x="1310" y="450" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="U11_di" bpmnElement="U11"><di:waypoint x="1410" y="450" /><di:waypoint x="1430" y="450" /><di:waypoint x="1430" y="660" /><di:waypoint x="1450" y="660" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="U12_di" bpmnElement="U12"><di:waypoint x="1550" y="660" /><di:waypoint x="1570" y="660" /><di:waypoint x="1570" y="780" /><di:waypoint x="1590" y="780" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="U13_di" bpmnElement="U13"><di:waypoint x="1690" y="780" /><di:waypoint x="1710" y="780" /><di:waypoint x="1710" y="450" /><di:waypoint x="1730" y="450" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="U14_di" bpmnElement="U14"><di:waypoint x="1830" y="450" /><di:waypoint x="1866" y="450" /><di:waypoint x="1866" y="340" /><di:waypoint x="1902" y="340" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="U15_di" bpmnElement="U15"><di:waypoint x="1938" y="340" /><di:waypoint x="1990" y="340" /><di:waypoint x="1990" y="450" /><di:waypoint x="2042" y="450" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="U16_di" bpmnElement="U16"><di:waypoint x="2078" y="450" /><di:waypoint x="2140" y="450" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="U17_di" bpmnElement="U17"><di:waypoint x="2240" y="450" /><di:waypoint x="2302" y="450" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="M1_di" bpmnElement="M1"><di:waypoint x="300" y="140" /><di:waypoint x="300" y="322" /><bpmndi:BPMNLabel><dc:Bounds x="306" y="250" width="120" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="M2_di" bpmnElement="M2"><di:waypoint x="1170" y="532" /><di:waypoint x="1170" y="198" /><bpmndi:BPMNLabel><dc:Bounds x="1176" y="250" width="120" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="M3_di" bpmnElement="M3"><di:waypoint x="1920" y="322" /><di:waypoint x="1920" y="118" /><bpmndi:BPMNLabel><dc:Bounds x="1926" y="250" width="120" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="M4_di" bpmnElement="M4"><di:waypoint x="2060" y="140" /><di:waypoint x="2060" y="432" /><bpmndi:BPMNLabel><dc:Bounds x="2066" y="250" width="120" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="A1_di" bpmnElement="A1"><dc:Bounds x="520" y="525" width="190" height="40" /></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="A1_as_di" bpmnElement="A1_as"><di:waypoint x="560" y="468" /><di:waypoint x="540" y="525" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="A2_di" bpmnElement="A2"><dc:Bounds x="760" y="556" width="200" height="40" /></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="A2_as_di" bpmnElement="A2_as"><di:waypoint x="830" y="490" /><di:waypoint x="780" y="556" /></bpmndi:BPMNEdge>
+<bpmndi:BPMNShape id="A3_di" bpmnElement="A3"><dc:Bounds x="1290" y="520" width="170" height="30" /></bpmndi:BPMNShape>
+<bpmndi:BPMNEdge id="A3_as_di" bpmnElement="A3_as"><di:waypoint x="1360" y="490" /><di:waypoint x="1310" y="520" /></bpmndi:BPMNEdge>
+</bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+</bpmn:definitions>
